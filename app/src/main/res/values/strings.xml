@@ -1,3 +1,22 @@
 <resources>
     <string name="app_name">MudraExample</string>
+    <string name="title_home">Scanning for devices</string>
+    <string name="name">name</string>
+    <string name="address">address</string>
+    <string name="title_callback">Calibration</string>
+    <string name="deviceInfo_callback">Device:  %1$s\nstatus: %2$s</string>
+    <string name="calibration_value_fragment">value</string>
+    <string name="calibration_calibrate_fragment">The calibration process requires you to calibrate 3 gestures.</string>
+    <string name="error_callback">Please make sure that you have a mudra device bonded</string>
+    <string name="calibration_finished">Calibration finished!</string>
+    <string name="calibration_current">Calibrating: %1$s\nprogress: %2$s\nquality: %3$s</string>
+    <string name="desc">desc</string>
+    <string name="address_main">Device address: %1$s</string>
+    <string name="status_main">Connection status: %1$s</string>
+    <string name="battery_main">Battery Level: %1$d %%</string>
+    <string name="next_callback">calibrate</string>
+    <string name="progress_calibration">Current progress: %1$s of 3\nCalibration gesture: %2$s</string>
+    <string name="connecting_connect">Connecting to device</string>
+    <string name="failed_connect">Failed to connect</string>
+
 </resources>
