@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import MudraAndroidSDK.interfaces.callback.OnDeviceStatusChanged;
 import MudraAndroidSDK.model.Mudra;
 import MudraAndroidSDK.model.MudraDevice;
 import il.co.wearabledevices.example.R;
@@ -60,30 +61,20 @@ public class ConnectActivity extends AppCompatActivity
     private void connectDevice(MudraDevice mudraDevice)
     {
         TextView connection = findViewById(R.id.textView_connection_connecting);
+        connection.setText(R.string.connecting_connect);
+        connection.setVisibility(View.VISIBLE);
+        connection.setTextColor(Color.BLACK);
 
         mudraDevice.connectDevice(this);
-        mudraDevice.setOnBondingChange(new BondingObserver()
-        {
+        mudraDevice.setOnDeviceStatusChanged(new OnDeviceStatusChanged() {
             @Override
-            public void onBondingRequired(@NonNull BluetoothDevice device)
+            public void run(boolean isConnected)
             {
-                connection.setText(R.string.connecting_connect);
-                connection.setVisibility(View.VISIBLE);
-                connection.setTextColor(Color.BLACK);
-            }
-
-            @Override
-            public void onBonded(@NonNull BluetoothDevice device)
-            {
-                navigateNext();
-                Mudra.getInstance().stopScan();
-            }
-
-            @Override
-            public void onBondingFailed(@NonNull BluetoothDevice device)
-            {
-                connection.setText(R.string.failed_connect);
-                connection.setTextColor(Color.RED);
+                if(isConnected)
+                {
+                    navigateNext();
+                    Mudra.getInstance().stopScan();
+                }
             }
         });
     }

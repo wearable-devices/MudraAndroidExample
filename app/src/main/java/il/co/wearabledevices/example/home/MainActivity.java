@@ -1,22 +1,5 @@
 package il.co.wearabledevices.example.home;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
-import MudraAndroidSDK.enums.GestureType;
-import MudraAndroidSDK.interfaces.ConnectionState;
-import MudraAndroidSDK.interfaces.callback.OnAirMousePositionChanged;
-import MudraAndroidSDK.interfaces.callback.OnBatteryLevelChanged;
-import MudraAndroidSDK.interfaces.callback.OnFingertipPressureReady;
-import MudraAndroidSDK.interfaces.callback.OnGestureReady;
-import MudraAndroidSDK.interfaces.callback.OnImuQuaternionReady;
-import MudraAndroidSDK.model.Mudra;
-import MudraAndroidSDK.model.MudraDevice;
-import il.co.wearabledevices.example.Constants;
-import il.co.wearabledevices.example.R;
-import il.co.wearabledevices.example.calibration.CalibrationActivity;
-import model.OpenGLRenderer;
-
 import android.content.Intent;
 import android.content.res.Resources;
 import android.opengl.GLSurfaceView;
@@ -27,9 +10,26 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+
+import MudraAndroidSDK.enums.ConnectionState;
+import MudraAndroidSDK.enums.GestureType;
+import MudraAndroidSDK.interfaces.callback.OnAirMousePositionChanged;
+import MudraAndroidSDK.interfaces.callback.OnBatteryLevelChanged;
+import MudraAndroidSDK.interfaces.callback.OnGestureReady;
+import MudraAndroidSDK.interfaces.callback.OnImuQuaternionReady;
+import MudraAndroidSDK.interfaces.callback.OnPressureReady;
+import MudraAndroidSDK.model.Mudra;
+import MudraAndroidSDK.model.MudraDevice;
+import il.co.wearabledevices.example.Constants;
+import il.co.wearabledevices.example.R;
+import il.co.wearabledevices.example.calibration.CalibrationActivity;
+import model.OpenGLRenderer;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity
     private void startConnection()
     {
         mudraDevice.setOnGestureReady(getOnGestureReady());
-        mudraDevice.setOnFingertipPressureReady(getOnFingertipPressureReady());
+        mudraDevice.setOnPressureReady(getOnFingertipPressureReady());
+
         mudraDevice.setOnAirMousePositionChanged(getOnAirMousePositionChanged());
         mudraDevice.setOnImuQuaternionReady(getOnImuQuaternionReady());
         mudraDevice.setOnBatteryLevelChanged(getOnBatteryLevelChanged());
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
-    private OnFingertipPressureReady getOnFingertipPressureReady()
+    private OnPressureReady getOnFingertipPressureReady()
     {
         ProgressBar pressureBar = findViewById(R.id.pressureBar_main);
 

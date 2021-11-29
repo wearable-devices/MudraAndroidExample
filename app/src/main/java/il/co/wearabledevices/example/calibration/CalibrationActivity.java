@@ -69,7 +69,6 @@ public class CalibrationActivity extends AppCompatActivity
 
     private void resetCalibration()
     {
-        mudraDevice.exitCalibration();
         mudraDevice.clearCurrentGestureCalibration();
         gestureType = GestureType.Mid_Tap;
     }
@@ -83,7 +82,6 @@ public class CalibrationActivity extends AppCompatActivity
     {
         ((TextView) findViewById(R.id.textView_calibration_status)).setText(R.string.calibration_finished);
         Mudra.getInstance().getUserData().updateCalibration(this, new Calibration(calibration), null);
-        mudraDevice.exitCalibration();
     }
 
     /**
