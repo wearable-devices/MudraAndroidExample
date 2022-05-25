@@ -1,28 +1,28 @@
 package il.co.wearabledevices.example.connection;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
-import MudraAndroidSDK.interfaces.callback.OnDeviceStatusChanged;
-import MudraAndroidSDK.model.Mudra;
-import MudraAndroidSDK.model.MudraDevice;
+import mudraAndroidSDK.enums.Feature;
+import mudraAndroidSDK.model.Mudra;
+import mudraAndroidSDK.model.MudraDevice;
 import il.co.wearabledevices.example.R;
 import il.co.wearabledevices.example.home.MainActivity;
-import no.nordicsemi.android.ble.observer.BondingObserver;
 
 public class ConnectActivity extends AppCompatActivity
 {
+    private static final long SCAN_DELAY = 5000;
     private ScannedDeviceAdapter scannedDeviceAdapter;
 
     @Override
@@ -32,7 +32,7 @@ public class ConnectActivity extends AppCompatActivity
         setContentView(R.layout.activity_connect);
 
         startAdapter();
-        scanForDevices();
+        setMudraEnvironment();
     }
 
     /**
@@ -42,14 +42,7 @@ public class ConnectActivity extends AppCompatActivity
     {
         RecyclerView recyclerView = findViewById(R.id.recyclerView_connection_devices);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        scannedDeviceAdapter = new ScannedDeviceAdapter()
-        {
-            @Override
-            public View.OnClickListener onClickListener(MudraDevice mudraDevice)
-            {
-                return v -> connectDevice(mudraDevice);
-            }
-        };
+        scannedDeviceAdapter = new ScannedDeviceAdapter(this::connectDevice);
         recyclerView.setAdapter(scannedDeviceAdapter);
     }
 
@@ -65,42 +58,53 @@ public class ConnectActivity extends AppCompatActivity
         connection.setVisibility(View.VISIBLE);
         connection.setTextColor(Color.BLACK);
 
+        Mudra.getInstance().stopScan();
         mudraDevice.connectDevice(this);
-        mudraDevice.setOnDeviceStatusChanged(new OnDeviceStatusChanged() {
-            @Override
-            public void run(boolean isConnected)
-            {
-                if(isConnected)
-                {
-                    navigateNext();
-                    Mudra.getInstance().stopScan();
-                }
-            }
-        });
+
+        mudraDevice.setOnDeviceStatusChanged(this::checkIfDeviceConnected);
+    }
+
+    private void checkIfDeviceConnected(boolean isConnected)
+    {
+        if (isConnected)
+        {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     /**
-     * Scan for new devices.
+     * Request the needed permissions, set the licenses and after the permissions was granted, start the scan for new devices.
      */
-    private void scanForDevices()
+    private void setMudraEnvironment()
     {
-        ArrayList<MudraDevice> bondedDevices = Mudra.getInstance().getBondedDevices();
-        if (bondedDevices.size() > 0)
-            navigateNext();
         Mudra.getInstance().requestAccessPermissions(this);
+        Mudra.getInstance().setLicense(Feature.DoubleTap, "LicenseType::DoubleTap");
+        Mudra.getInstance().setLicense(Feature.Main, "LicenseType::Main");
     }
 
+    /**
+     * Update any bonded devices and start the scan for new devices.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (Mudra.getInstance().isBluetoothOn())
-            Mudra.getInstance().scan(mudraDevices -> scannedDeviceAdapter.updateList(mudraDevices));
+        startScan();
     }
 
-    private void navigateNext()
+    private void startScan()
     {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        if (Mudra.getInstance().isBluetoothOn(this))
+        {
+            scannedDeviceAdapter.updateList(Mudra.getInstance().getBondedDevices(this));
+            Mudra.getInstance().scan(this, mudraDevices -> scannedDeviceAdapter.updateList(mudraDevices));
+        }
+        else
+        {
+            Toast.makeText(this, "Please start bluetooth",Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(this::startScan, SCAN_DELAY);
+        }
     }
+
 }

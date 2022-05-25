@@ -17,15 +17,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-import MudraAndroidSDK.enums.ConnectionState;
-import MudraAndroidSDK.enums.GestureType;
-import MudraAndroidSDK.interfaces.callback.OnAirMousePositionChanged;
-import MudraAndroidSDK.interfaces.callback.OnBatteryLevelChanged;
-import MudraAndroidSDK.interfaces.callback.OnGestureReady;
-import MudraAndroidSDK.interfaces.callback.OnImuQuaternionReady;
-import MudraAndroidSDK.interfaces.callback.OnPressureReady;
-import MudraAndroidSDK.model.Mudra;
-import MudraAndroidSDK.model.MudraDevice;
+import mudraAndroidSDK.enums.ConnectionState;
+import mudraAndroidSDK.enums.GestureType;
+import mudraAndroidSDK.interfaces.callback.OnAirMousePositionChanged;
+import mudraAndroidSDK.interfaces.callback.OnBatteryLevelChanged;
+import mudraAndroidSDK.interfaces.callback.OnGestureReady;
+import mudraAndroidSDK.interfaces.callback.OnImuQuaternionReady;
+import mudraAndroidSDK.interfaces.callback.OnPressureReady;
+import mudraAndroidSDK.model.Mudra;
+import mudraAndroidSDK.model.MudraDevice;
 import il.co.wearabledevices.example.Constants;
 import il.co.wearabledevices.example.R;
 import il.co.wearabledevices.example.calibration.CalibrationActivity;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initCube()
     {
-        surfaceView = (GLSurfaceView) findViewById(R.id.cubeLayout_main);
+        surfaceView = findViewById(R.id.cubeLayout_main);
         surfaceView.setEGLContextClientVersion(1);
         glRenderer = new OpenGLRenderer();
         surfaceView.setRenderer(glRenderer);
@@ -88,11 +88,11 @@ public class MainActivity extends AppCompatActivity
 
     private void connect()
     {
-        ArrayList<MudraDevice> mudraDevices = Mudra.getInstance().getBondedDevices();
+        ArrayList<MudraDevice> mudraDevices = Mudra.getInstance().getBondedDevices(this);
         if (mudraDevices.size() < 1)
             return;
 
-        mudraDevice = mudraDevices.get(0);
+        mudraDevice = mudraDevices.get(0); //Take the firs bonded device
 
         TextView address = findViewById(R.id.textView_addressTitle_main);
         address.setText(getString(R.string.address_main, mudraDevice.getBleAddress()));
@@ -101,6 +101,16 @@ public class MainActivity extends AppCompatActivity
             mudraDevice.connectDevice(this);
         mudraDevice.getConnectionState().observe(this, this::OnStatusUpdate);
     }
+
+    private void OnStatusUpdate(ConnectionState connectionState)
+    {
+        TextView deviceNameTextView = findViewById(R.id.textView_status_main);
+        deviceNameTextView.setText(getString(R.string.status_main, connectionState.name()));
+
+        if (connectionState == ConnectionState.Connected)
+            startConnection();
+    }
+
 
     private void startConnection()
     {
@@ -118,15 +128,6 @@ public class MainActivity extends AppCompatActivity
     {
         return level ->
                 runOnUiThread(new Thread(() -> batteryTextView.setText(getString(R.string.battery_main, mudraDevice.getBatteryLevel()))));
-    }
-
-    private void OnStatusUpdate(ConnectionState connectionState)
-    {
-        TextView deviceNameTextView = findViewById(R.id.textView_status_main);
-        deviceNameTextView.setText(getString(R.string.status_main, connectionState.name()));
-
-        if (connectionState == ConnectionState.Connected)
-            startConnection();
     }
 
     private OnImuQuaternionReady getOnImuQuaternionReady()

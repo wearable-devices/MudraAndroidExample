@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-import MudraAndroidSDK.cloud.model.Calibration;
-import MudraAndroidSDK.enums.GestureType;
-import MudraAndroidSDK.enums.Quality;
-import MudraAndroidSDK.model.Mudra;
-import MudraAndroidSDK.model.MudraDevice;
 import il.co.wearabledevices.example.R;
+import mudraAndroidSDK.cloud.model.Calibration;
+import mudraAndroidSDK.enums.GestureType;
+import mudraAndroidSDK.enums.Quality;
+import mudraAndroidSDK.model.Mudra;
+import mudraAndroidSDK.model.MudraDevice;
 
 public class CalibrationActivity extends AppCompatActivity
 {
@@ -41,7 +41,7 @@ public class CalibrationActivity extends AppCompatActivity
      */
     private void findAndConnect()
     {
-        ArrayList<MudraDevice> mudraDevices = Mudra.getInstance().getBondedDevices();
+        ArrayList<MudraDevice> mudraDevices = Mudra.getInstance().getBondedDevices(this);
         if (mudraDevices.size() >= 1)
         {
             mudraDevice = mudraDevices.get(0);

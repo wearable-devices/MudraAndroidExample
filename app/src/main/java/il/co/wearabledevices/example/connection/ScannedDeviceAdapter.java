@@ -10,32 +10,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
-import MudraAndroidSDK.model.MudraDevice;
+import mudraAndroidSDK.model.MudraDevice;
 import il.co.wearabledevices.example.R;
 
 public class ScannedDeviceAdapter extends RecyclerView.Adapter<ScannedDeviceAdapter.DevicesViewHolder>
 {
-
     private final ArrayList<MudraDevice> devices;
+    private final OnDeviceViewHolderClicked clickCallback;
 
-    public static class DevicesViewHolder extends RecyclerView.ViewHolder
-    {
-        final TextView nameText;
-        final TextView shortAddress;
-        final ConstraintLayout constraintLayout;
-
-        public DevicesViewHolder(View view)
-        {
-            super(view);
-            constraintLayout = view.findViewById(R.id.constraintLayout_mudraDeviceItem_main);
-            nameText = view.findViewById(R.id.textView_mudraDeviceItem_name);
-            shortAddress = view.findViewById(R.id.textView_mudraDeviceItem_shortAddress);
-        }
-    }
-
-    public ScannedDeviceAdapter()
+    public ScannedDeviceAdapter(OnDeviceViewHolderClicked clickCallback)
     {
         this.devices = new ArrayList<>();
+        this.clickCallback = clickCallback;
     }
 
     public void updateList(ArrayList<MudraDevice> devices)
@@ -60,7 +46,7 @@ public class ScannedDeviceAdapter extends RecyclerView.Adapter<ScannedDeviceAdap
         MudraDevice mudraDevice = devices.get(position);
         devicesViewHolder.nameText.setText(mudraDevice.getBluetoothDeviceName());
         devicesViewHolder.shortAddress.setText(mudraDevice.getShortAddress());
-        devicesViewHolder.constraintLayout.setOnClickListener(onClickListener(mudraDevice));
+        devicesViewHolder.constraintLayout.setOnClickListener(view -> clickCallback.run(mudraDevice));
     }
 
     @Override
@@ -69,10 +55,18 @@ public class ScannedDeviceAdapter extends RecyclerView.Adapter<ScannedDeviceAdap
         return devices.size();
     }
 
-    public View.OnClickListener onClickListener(MudraDevice mudraDevice)
+    public static class DevicesViewHolder extends RecyclerView.ViewHolder
     {
-        return v ->
+        final TextView nameText;
+        final TextView shortAddress;
+        final ConstraintLayout constraintLayout;
+
+        public DevicesViewHolder(View view)
         {
-        };
+            super(view);
+            constraintLayout = view.findViewById(R.id.constraintLayout_mudraDeviceItem_main);
+            nameText = view.findViewById(R.id.textView_mudraDeviceItem_name);
+            shortAddress = view.findViewById(R.id.textView_mudraDeviceItem_shortAddress);
+        }
     }
 }
