@@ -79,8 +79,6 @@ public class ConnectActivity extends AppCompatActivity
     private void setMudraEnvironment()
     {
         Mudra.getInstance().requestAccessPermissions(this);
-        Mudra.getInstance().setLicense(Feature.DoubleTap, "LicenseType::DoubleTap");
-        Mudra.getInstance().setLicense(Feature.Main, "LicenseType::Main");
     }
 
     /**

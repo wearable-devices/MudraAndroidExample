@@ -30,6 +30,6 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'com.google.android.material:material:1.6.0'
 
-    implementation 'com.github.wearable-devices:MudraAndroidSDK:1.5.6.0'
+    implementation 'com.github.wearable-devices:MudraAndroidSDK:1.5.7.0'
 
 }
